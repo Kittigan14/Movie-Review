@@ -118,6 +118,47 @@ app.post("/logout", (req, res) => {
     res.send('Logout Success!');
 });
 
+app.get("/forgetPassword", (req, res) => {
+    res.send('This is the login page.');
+});
+
+app.post('/editPassword', (req, res) => {
+    const {
+        email,
+        newPassword,
+        confirmPassword
+    } = req.body;
+
+    // Check if email already exists
+    db.get("SELECT * FROM Users WHERE Email = ?", [email], (err, user) => {
+        if (err) {
+            console.error(err.message);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+
+        if (!user) {
+            res.status(404).send("User not found");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            res.status(400).send("Passwords do not match");
+            return;
+        }
+
+        // Update Password for Table Users Where email
+        db.run("UPDATE Users SET Password = ? WHERE Email = ?", [newPassword, email], (err) => {
+            if (err) {
+                console.error(err.message);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+            res.send('Password updated successfully.');
+        });
+    });
+});
+
 // Run Servers PORT 3000
 app.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);

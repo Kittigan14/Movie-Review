@@ -89,9 +89,38 @@ app.get("/forgetPassword", (req, res) => {
     res.render('forgetPassword');
 });
 
-// app.post('/editPassword', (req, res) => {
-//     const data = { Password: req.body.Password };
-// })
+app.post('/editPassword', async (req, res) => {
+    const {
+        email,
+        newPassword,
+        confirmPassword
+    } = req.body;
+
+    try {
+        const response = await axios.post(base_url + '/editPassword', {
+            email,
+            newPassword,
+            confirmPassword
+        });
+
+        if (response.data === 'Password updated successfully.') {
+            const alertScript = "<script>alert('Update Password Successfully!'); window.location='/login';</script>";
+            res.send(alertScript);
+            // res.render('login', {message: response.data});
+        }else {
+            window.alert('Edit Password failed');
+            res.redirect('/forgetPassword');
+        }
+    } catch (err) {
+        if (err.response && err.response.status === 400) {
+            const alertScript = "<script>alert('Password do not match.'); window.location='/forgetPassword';</script>";
+            res.send(alertScript);
+        } else {
+            console.error(err.message);
+            res.status(500).send('Internal Server Error');
+        }
+    }
+});
 
 app.get('/logout', async (req, res) => {
     try {
