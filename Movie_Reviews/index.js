@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Save Username
 app.use(
     session({
         secret: "your-secret-key",
@@ -37,13 +38,14 @@ app.get("/", (req, res) => {
 
 // Register Routes
 app.get('/register', async (req, res) => {
-    res.render('Register.ejs');
+    res.render('Register');
 });
 
+// Register Route & Insert User Database
 app.post("/registerPost", async (req, res) => {
     const data = req.body;
     try {
-        await axios.post(base_url + '/registerPost', data);
+        await axios.post(`${base_url}/registerPost`, data);
         res.redirect('/login');
     } catch (err) {
         console.error(err);
@@ -51,10 +53,12 @@ app.post("/registerPost", async (req, res) => {
     }
 });
 
+// Login Ejs
 app.get('/login', (req, res) => {
-    res.render('Login.ejs');
+    res.render('Login');
 });
 
+// Login Route & Check User Database
 app.post("/loginPost", async (req, res) => {
     const data = {
         UserName: req.body.username,
@@ -62,7 +66,7 @@ app.post("/loginPost", async (req, res) => {
     };
 
     try {
-        const response = await axios.post(base_url + '/loginPost', data);
+        const response = await axios.post(`${base_url}/loginPost`, data);
         console.log(response.data);
 
         if (response.data === 'Login successfully') {
@@ -85,10 +89,12 @@ app.post("/loginPost", async (req, res) => {
     }
 });
 
+// Forgetpassword ejs
 app.get("/forgetPassword", (req, res) => {
     res.render('forgetPassword');
 });
 
+// Update Password Users
 app.post('/editPassword', async (req, res) => {
     const {
         email,
@@ -97,7 +103,7 @@ app.post('/editPassword', async (req, res) => {
     } = req.body;
 
     try {
-        const response = await axios.post(base_url + '/editPassword', {
+        const response = await axios.post(`${base_url}/editPassword`, {
             email,
             newPassword,
             confirmPassword
@@ -106,8 +112,7 @@ app.post('/editPassword', async (req, res) => {
         if (response.data === 'Password updated successfully.') {
             const alertScript = "<script>alert('Update Password Successfully!'); window.location='/login';</script>";
             res.send(alertScript);
-            // res.render('login', {message: response.data});
-        }else {
+        } else {
             window.alert('Edit Password failed');
             res.redirect('/forgetPassword');
         }
@@ -122,9 +127,10 @@ app.post('/editPassword', async (req, res) => {
     }
 });
 
+// Logout Username Session
 app.get('/logout', async (req, res) => {
     try {
-        await axios.post(base_url + '/logout');
+        await axios.post(`${base_url}/logout`);
         req.session.destroy();
         res.redirect('/login');
     } catch (err) {
@@ -133,6 +139,106 @@ app.get('/logout', async (req, res) => {
     }
 });
 
+// Movies Route
+app.get('/movies', async (req, res) => {
+    try {
+        const response = await axios.get(`${base_url}/movies`);
+        const userName = req.session.user ? req.session.user.UserName : "";
+        res.render('Movie', {
+            ...response.data,
+            userName
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Get Movies By GenresID
+app.get('/getMoviesByGenre/:GenresID', async (req, res) => {
+    try {
+        const genresId = req.params.GenresID;
+        const response = await axios.get(`${base_url}/getMoviesByGenre/${genresId}`);
+        const data = response.data;
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Get DetailMovie By MovieID
+app.get('/detailMovie/:MovieID', async (req, res) => {
+    try {
+        const movieId = req.params.MovieID;
+        const response = await axios.get(`${base_url}/detailMovie/${movieId}`);
+        const userName = req.session.user ? req.session.user.UserName : "";
+        res.render('DetailMovie', {
+            ...response.data,
+            userName
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Search Movie
+app.get("/searchMovie", async (req, res) => {
+    try {
+        const searchTerm = req.query.searchTerm;
+        if (!searchTerm) {
+            res.status(400).send("Search term is required");
+            return;
+        }
+        const response = await axios.get(`${base_url}/searchMovie?searchTerm=${searchTerm}`);
+        if (response.data.movies && response.data.movies.length === 1) {
+            const movieId = response.data.movies[0].MovieID;
+            res.redirect(`/detailMovie/${movieId}`);
+            return;
+        }
+        const userName = req.session.user ? req.session.user.UserName : "";
+        res.render('SearchResult', {
+            movies: response.data.movies,
+            userName
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Reviews Route
+app.get('/reviews', async (req, res) => {
+    const userName = req.session.user ? req.session.user.UserName : "";
+    if (!userName) {
+        res.redirect("/login");
+        return;
+    }
+    const movieId = req.query.movieId;
+    res.render("ReviewMovie", { userName: userName, movieId: movieId });
+});
+
+app.post('/reviewsPost', async (req, res) => {
+    try {
+        const comment = req.body.comment;
+        const usersId = req.session.user.UsersID;
+        const movieId = req.body.movieId;
+
+        await axios.post(`${base_url}/reviewsPost`, {
+            comment: comment,
+            usersId: usersId,
+            movieId: movieId
+        });
+
+        res.send('Review posted successfully');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+    }
+});
+
+// Contact Route
 app.get("/contact", (req, res) => {
     const userName = req.session.user ? req.session.user.UserName : "";
     res.render('Contact', {

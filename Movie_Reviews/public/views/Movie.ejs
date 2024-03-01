@@ -68,26 +68,34 @@
   <div class="movie-Genres">
     <ul>
       <li class="text-genre">Genre |</li>
+      <% if (genres && genres.length) { %>
       <% for (let i = 0; i < genres.length; i++) { %>
       <li>
-        <a href="javascript:void(0);" class="genres-name" data-genre-id="<%= genres[i].genresid %>">
-          <%= genres[i].title %>
+        <a href="javascript:void(0);" class="genres-name" data-genre-id="<%= genres[i].GenresID %>">
+          <%= genres[i].GenreName %>
         </a>
       </li>
+      <% } %>
+      <% } else { %>
+      <li>No genres available</li>
       <% } %>
     </ul>
   </div>
 
   <div class="movie-container" id="movieContainer">
+    <% if (movies && movies.length) { %>
     <% for (let i = 0; i < movies.length; i++) { %>
-    <div class="movie-list" data-genre-id="<%= movies[i].GenresID %>">
+    <div class="movie-list" data-genre-id="<%= movies[i].GenresID %>" data-movie-id="<%= movies[i].MovieID %>">
       <div class="movie-images">
-        <a href="/detailMovie/<%= movies[i].movieid %>">
+        <a href="/detailMovie/<%= movies[i].MovieID %>">
           <img src="<%= movies[i].Image %>" alt="" />
         </a>
         <div class="title"><%= movies[i].Title %></div>
       </div>
     </div>
+    <% } %>
+    <% } else { %>
+    <p>No movies available for the selected genre.</p>
     <% } %>
   </div>
 </body>

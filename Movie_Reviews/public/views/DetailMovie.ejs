@@ -66,14 +66,28 @@
 
   <div class="detail-container">
     <div class="movie-detail">
-      <h1 class="title-movie-detail"><%= movie.Title %></h1>
+      <h1 class="title-movie-detail">
+        <%= movie.Title %>
+        <div class="line-Detail"></div>
+      </h1>
 
       <div class="detailText">
-        <p> <b>Synopsis</b> <br> <%= movie.Synopsis %></p>
+        <b>Synopsis</b>
+        <br>
+        <p> <%= movie.Synopsis %></p>
         <br />
-        <p> <b>Release Date</b> <br> <%= movie.Release %></p>
+        <b>Release Date</b>
+        <br>
+        <p> <%= movie.Release %></p>
         <br />
-        <p> <b>Genres</b> <br> <%= movie.GenresTitle %></p>
+        <b>Time</b>
+        <br>
+        <p> <%= movie.Duration %></p>
+        <br />
+        <b>Genre</b>
+        <br>
+        <p> <%= movie.GenresTitle %></p>
+        <br />
       </div>
 
       <img src="<%= movie.Image %>" alt="<%= movie.Title %>" class="movie-detail-img" />
@@ -85,8 +99,8 @@
       </button>
 
       <button class="review-Movie">
-        <a href="/reviews"> Comment </a>
-      </button>
+        <a href="/reviews?movieId=<%= movie.MovieID %>"> Comment </a>
+    </button>
     </div>
   </div>
 

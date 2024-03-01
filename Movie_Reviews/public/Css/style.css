@@ -339,8 +339,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 5px;
-    /* padding: 10px; */
+    margin-top: 60px;
     text-transform: uppercase;
     font-weight: bold;
 
@@ -371,12 +370,13 @@
             margin: 20px;
 
             & a {
+                font-size: 20px;
                 color: #272829;
             }
         }
 
         & .text-genre {
-            font-size: 18px;
+            font-size: 22px;
             text-transform: uppercase;
         }
 
@@ -398,7 +398,7 @@
     flex-wrap: wrap;
 
     .movie-list {
-        width: 250px;
+        width: 265px;
         height: 350px;
         margin: 80px 50px;
         border: none;
@@ -475,13 +475,20 @@
 
         & .title-movie-detail {
             width: 400px;
-            font-size: 30px;
+            font-size: 25px;
             font-weight: bold;
             text-transform: uppercase;
         }
 
+        & .line-Detail {
+            width: 320px;
+            margin-top: 13px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
         & .movie-detail-img {
             position: absolute;
+            top: 5%;
             right: 20px;
             width: 320px;
             height: 450px;
@@ -491,14 +498,13 @@
         }
 
         & .movie-detail-img:hover {
-            transform: sca
-        le(1.06);
+            transform: scale(1.04);
         }
 
         & .detailText {
             width: 380px;
             position: absolute;
-            top: 40%;
+            top: 52%;
             left: 10px;
             transform: translateY(-50%);
             text-align: left;
@@ -509,6 +515,8 @@
             }
 
             & p {
+                margin-top: 2px;
+                margin-left: 5px;
                 font-weight: 400;
                 word-wrap: break-word;
             }
@@ -716,6 +724,15 @@
         animation: fade-color-DarkMode 10s infinite;
     }
 
+}
+
+.Alert-Genres {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 25px;
+    text-transform: uppercase;
 }
 
 @keyframes fade-color-DarkMode {
