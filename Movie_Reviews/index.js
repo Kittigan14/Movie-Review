@@ -222,20 +222,20 @@ app.get('/reviews', async (req, res) => {
 app.post('/reviewsPost', async (req, res) => {
     try {
         const comment = req.body.comment;
-        const usersId = req.session.user.UsersID;
+        const userName = req.session.user ? req.session.user.UserName : "" ;
         const movieId = req.body.movieId;
 
         await axios.post(`${base_url}/reviewsPost`, {
             comment: comment,
-            usersId: usersId,
+            userName: userName,
             movieId: movieId
         });
 
-        res.send('Review posted successfully');
+        res.redirect(`/detailMovie/${movieId}`);
     } catch (err) {
         console.error(err);
         res.status(500).send(err);
-    }
+    }    
 });
 
 // Contact Route

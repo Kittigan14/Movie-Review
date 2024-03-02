@@ -5,6 +5,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.urlencoded({
+    extended: true
+}));
 app.use(express.json());
 app.use(cors());
 
@@ -288,27 +291,37 @@ app.get("/searchMovie", (req, res) => {
 });
 
 // Reviews Movie Route
-app.post('/reviewsPost', (req, res) => {
+app.post('/reviewsPost', async (req, res) => {
     try {
-        const { comment, movieId } = req.body;
-        if (!comment || !movieId) {
-            res.status(400).send("Invalid data");
-            return;
-        }
-        const sql = `
-            INSERT INTO Reviews (Comment, MovieID)
-            VALUES (?, ?)
+        const comment = req.body.comment;
+        const movieId = req.body.movieId;
+        const userName = req.body.userName;
+
+        const userIdQuery = `
+            SELECT UsersID
+            FROM Users
+            WHERE UserName = ?
         `;
+        
+        // console.log("Executing query:", userIdQuery, [userName]);
+        const userIdResult = await db.get(userIdQuery, [userName]);
 
-        db.run(sql, [comment, movieId], function (err) {
-            if (err) {
-                console.error(err.message);
-                res.status(500).send("Internal Server Error");
-                return;
-            }
+        // if (!userIdResult || !userIdResult.UsersID) {
+        //     console.log("User not found");
+        //     res.status(400).send("User not found");
+        //     return;
+        // }
 
-            res.send("Review posted successfully");
-        });
+        const userId = userIdResult.UsersID;
+
+        const sql = `
+            INSERT INTO Reviews (Comment, MovieID, UsersID)
+            VALUES (?, ?, ?)
+        `;
+        await db.run(sql, [comment, movieId, userId]);
+
+        console.log("Review posted successfully");
+        res.send("Review posted successfully");
     } catch (err) {
         console.error(err);
         res.status(500).send(err);
