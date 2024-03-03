@@ -21,7 +21,7 @@ app.use(
 );
 
 // Connection Database
-const db = new sqlite.Database("Movie_System.sqlite");
+const db = new sqlite.Database("Movies_System.sqlite");
 
 // Create Table Database
 db.run(`CREATE TABLE IF NOT EXISTS Genres (
@@ -30,7 +30,7 @@ db.run(`CREATE TABLE IF NOT EXISTS Genres (
 )`);
 
 db.run(`CREATE TABLE IF NOT EXISTS Users (
-    UsersID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
     UserName TEXT,
     Email TEXT UNIQUE,
     Password TEXT
@@ -50,9 +50,8 @@ db.run(`CREATE TABLE IF NOT EXISTS Movies (
 db.run(`CREATE TABLE IF NOT EXISTS Reviews (
     ReviewsID INTEGER PRIMARY KEY AUTOINCREMENT,
     Comment TEXT,			
-    UsersID INTEGER,
+    UserName TEXT,
     MovieID INTEGER,
-    FOREIGN KEY (UsersID) REFERENCES Users(UsersID),
     FOREIGN KEY (MovieID) REFERENCES Movies(MovieID)
 )`);
 
@@ -291,34 +290,17 @@ app.get("/searchMovie", (req, res) => {
 });
 
 // Reviews Movie Route
-app.post('/reviewsPost', async (req, res) => {
+app.post('/reviewsPost', (req, res) => {
     try {
         const comment = req.body.comment;
         const movieId = req.body.movieId;
         const userName = req.body.userName;
 
-        const userIdQuery = `
-            SELECT UsersID
-            FROM Users
-            WHERE UserName = ?
-        `;
-        
-        // console.log("Executing query:", userIdQuery, [userName]);
-        const userIdResult = await db.get(userIdQuery, [userName]);
-
-        // if (!userIdResult || !userIdResult.UsersID) {
-        //     console.log("User not found");
-        //     res.status(400).send("User not found");
-        //     return;
-        // }
-
-        const userId = userIdResult.UsersID;
-
         const sql = `
-            INSERT INTO Reviews (Comment, MovieID, UsersID)
+            INSERT INTO Reviews (Comment, UserName, MovieID)
             VALUES (?, ?, ?)
         `;
-        await db.run(sql, [comment, movieId, userId]);
+        db.run(sql, [comment, userName, movieId]);
 
         console.log("Review posted successfully");
         res.send("Review posted successfully");

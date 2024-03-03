@@ -18,8 +18,8 @@
     <ul class="navbar-menu">
       <li><a href="/" class="nav-item"> Home </a></li>
       <li><a href="/movies" class="nav-item"> Movie </a></li>
-      <li><a href="/reviews" class="nav-item"> Review </a></li>
       <li><a href="/contact" class="nav-item"> Contact </a></li>
+      <li class="Caption"> Reviews By , For You </li>
     </ul>
 
     <!-- Logo Webpage -->
@@ -49,6 +49,7 @@
       </button>
     </form>
     <% } else { %>
+    <!-- Show login and register buttons if the user is not logged in -->
     <button class="button-login" id="loginButton">
       <a href="/login"> Login </a>
     </button>
@@ -68,13 +69,13 @@
   <div class="Reviews-container">
     <h2 class="title">Comment</h2>
     <form action="/reviewsPost" method="post">
-        <label for="comment">Comment:</label>
-        <input type="text" id="comment" name="comment" placeholder="Enter your comment..." required />
-        <input type="hidden" name="userName" value="<%= userName %>">
-        <input type="hidden" name="movieId" value="<%= movieId %>"> 
-        <button type="submit" class="button-submit-login">Submit</button>
+      <label for="comment">Comment:</label>
+      <input type="text" id="comment" name="comment" placeholder="Enter your comment..." required />
+      <input type="hidden" name="userName" value="<%= userName %>">
+      <input type="hidden" name="movieId" value="<%= movieId %>">
+      <button type="submit" class="button-submit-login">Submit</button>
     </form>
-</div>
+  </div>
 
 
 </body>
